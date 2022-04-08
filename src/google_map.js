@@ -282,19 +282,21 @@ class GoogleMap extends Component {
 
     this.props.googleMapLoader(bootstrapURLKeys, this.props.heatmapLibrary); // we can start load immediatly
 
-    setTimeout(
-      () => {
-        // to detect size
-        this._setViewSize();
-        if (
-          this._isCenterDefined(this.props.center || this.props.defaultCenter)
-        ) {
-          this._initMap();
-        }
-      },
-      0,
-      this
-    );
+    ReactDOM.flushSync(() => {
+      setTimeout(
+        () => {
+          // to detect size
+          this._setViewSize();
+          if (
+            this._isCenterDefined(this.props.center || this.props.defaultCenter)
+          ) {
+            this._initMap();
+          }
+        },
+        0,
+        this
+      );
+    });
     if (this.props.resetBoundsOnResize) {
       const that = this;
       addResizeListener(mapDom, that._mapDomResizeCallback);
@@ -330,7 +332,9 @@ class GoogleMap extends Component {
       !this._isCenterDefined(prevProps.center) &&
       this._isCenterDefined(this.props.center)
     ) {
-      setTimeout(() => this._initMap(), 0);
+      ReactDOM.flushSync(() => {
+        setTimeout(() => this._initMap(), 0);
+      });
     }
 
     if (this.map_) {
